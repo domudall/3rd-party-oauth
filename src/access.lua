@@ -194,7 +194,7 @@ function get_callback_url(conf)
     end
 
     kong.log("callback", scheme .. "://" .. host ..  ":" .. port .. conf.path_prefix .. "/oauth2/callback")
-    return scheme .. "://" .. host ..  ":" .. port .. conf.path_prefix .. "/oauth2/callback"
+    return scheme .. "://" .. host .. conf.path_prefix .. "/oauth2/callback"
 end
 
 return _M
