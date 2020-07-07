@@ -136,6 +136,7 @@ function handle_callback( conf, callback_url )
     local args = ngx.req.get_uri_args()
 
     if args.code then
+        kong.log.err("TIME TO PROCESS")
         local httpc = http:new()
         local res, err = httpc:request_uri(conf.token_url, {
             method = "POST",
@@ -147,6 +148,7 @@ function handle_callback( conf, callback_url )
         })
 
         if not res then
+            kong.log.err("hello ", err)
             ngx.say("failed to request: ", err)
             ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
         end
@@ -175,26 +177,19 @@ end
 -- Builds a callback url taking into consideration any X-Forwarded headers
 function get_callback_url(conf)
     local scheme = kong.request.get_forwarded_scheme();
-    kong.log("first scheme", scheme)
     if not scheme then
         scheme = kong.request.get_scheme()
-        kong.log("second scheme", scheme)
     end
     local host = kong.request.get_forwarded_host();
-    kong.log("first host", host)
     if not host then
         host = kong.request.get_host()
-        kong.log("second host", host)
     end
     local port = kong.request.get_forwarded_port();
-    kong.log("first port", port)
     if not port then
         port = kong.request.get_port()
-        kong.log("second port", port)
     end
 
-    kong.log("callback", scheme .. "://" .. host ..  ":" .. port .. conf.path_prefix .. "/oauth2/callback")
-    return scheme .. "://" .. host .. conf.path_prefix .. "/oauth2/callback"
+    return scheme .. "://" .. host ..  ":" .. port .. conf.path_prefix .. "/oauth2/callback"
 end
 
 return _M
