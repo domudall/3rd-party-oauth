@@ -136,7 +136,6 @@ function handle_callback( conf, callback_url )
     local args = ngx.req.get_uri_args()
 
     if args.code then
-        kong.log.err("TIME TO PROCESS")
         local httpc = http:new()
         local res, err = httpc:request_uri(conf.token_url, {
             method = "POST",
@@ -149,15 +148,11 @@ function handle_callback( conf, callback_url )
         })
 
         if not res then
-            kong.log.err("hello ", err)
             ngx.say("failed to request: ", err)
             ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
         end
 
-        kong.log.err("BODY", res.body)
-
         local json = cjson.decode(res.body)
-        kong.log.err("JSON", json)
         local access_token = json.access_token
         if not access_token then
             ngx.say(json.error_description)
@@ -194,7 +189,6 @@ function get_callback_url(conf)
     end
 
     local callback_url = scheme .. "://" .. host .. conf.path_prefix .. "/oauth2/callback"
-    kong.log.err("callback_url ", callback_url)
     return callback_url
 end
 
