@@ -153,7 +153,10 @@ function handle_callback( conf, callback_url )
             ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
         end
 
+        kong.log.err("BODY", res.body)
+
         local json = cjson.decode(res.body)
+        kong.log.err("JSON", json)
         local access_token = json.access_token
         if not access_token then
             ngx.say(json.error_description)
@@ -189,7 +192,7 @@ function get_callback_url(conf)
         port = kong.request.get_port()
     end
 
-    callback_url = scheme .. "://" .. host .. conf.path_prefix .. "/oauth2/callback"
+    local callback_url = scheme .. "://" .. host .. conf.path_prefix .. "/oauth2/callback"
     kong.log.err("callback_url ", callback_url)
     return callback_url
 end
